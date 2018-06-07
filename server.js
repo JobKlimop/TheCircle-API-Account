@@ -28,15 +28,17 @@ app.set('env', 'development')
 
 
 
+// login and register endpoints
 app.use('/api/account', account)
 
+
+// token check
 app.use('*', (req, res, next) => {
     let token = req.headers.token
-    console.log(token)
     if (token){
         jwt.verify(token, env.env.key, (err, decode) => {
             if(err){
-                res.status(402).json(err)
+                res.status(402).json({'error': 'unauthorized, token invalid'})
             }else{
                 next()
             }
@@ -44,10 +46,6 @@ app.use('*', (req, res, next) => {
     }else{
         res.status(402).json({'error': 'unauthorized, please supply a token'})
     }
-})
-
-app.get('test', (req, res)=>{
-    res.send('test')
 })
 
 app.listen(env.env.port, () => {

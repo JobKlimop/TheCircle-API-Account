@@ -43,7 +43,7 @@ routes.post('/login', (req, res) => {
     .then((user) => {
         bcrypt.compare(password, user.password, (err, result) => {
             if (result){
-                let token = jwt.sign({data: 'foobar'}, 'secret', { expiresIn: '1h' })
+                let token = jwt.sign({data: 'foobar'}, env.env.key, { expiresIn: '24h' })
                 res.status(200).json({'token': token})
             }else{
                 res.status(402).json({"error": 'unauthorized'})
@@ -52,4 +52,19 @@ routes.post('/login', (req, res) => {
     })
 })
 
+
+routes.post('/check', (req, res) => {
+    let token = req.body.token
+    if (token){
+        jwt.verify(token, env.env.key, (err, decode) => {
+            if(err){
+                res.status(402).json({'error': 'unauthorized, token invalid'})
+            }else{
+                res.status(200).json({'succes': 'token valid'})
+            }
+        })
+    }else{
+        res.status(402).json({'error': 'unauthorized, please supply a token'})
+    }
+})
 module.exports = routes
