@@ -8,6 +8,9 @@ const chaiHttp = require('chai-http')
 const server = require('../server')
 const should = chai.should()
 const jwt = require('jsonwebtoken')
+const env = require('../config/env')
+const assert = require('assert')
+
 
 chai.use(chaiHttp)
 
@@ -23,7 +26,14 @@ describe('POST login', () => {
         .post('/api/account/login')
         .send(body)
         .end((err, res) => {
-            res.should.have
+            res.should.have.status(200)
+            res.body.should.be.a('object')
+            res.body.should.have.property('token')
+            jwt.verify(res.body.token, env.env.key, (err, decode) => {
+                assert(decode)
+                done()
+            })  
+            
         })
     })
 })
