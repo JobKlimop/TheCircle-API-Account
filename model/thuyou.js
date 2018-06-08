@@ -17,8 +17,8 @@ const truyouShema = new Schema({
     avatar:{
         required: false
     },
-})
+});
 
-const truyou = mongoose.model('truyou', truyouShema)
+const truyou = mongoose.model('truyou', truyouShema);
 
-module.exports = truyou
+module.exports = truyou;
