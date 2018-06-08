@@ -13,13 +13,14 @@ mongoose.connect(env.env.mongoHost)
 
 routes.post('/register', (req, res) => {
     if(registrationAllow){
+        if(body.user && body.password){
         user = new Truyou(req.body.user)
         password = req.body.password
         bcrypt.genSalt(10, (err, salt) =>{
             bcrypt.hash(password, salt, (err, hash) => {
                 user.save()
                 .then((user) => {
-                     password = new TruyouPassword({"name": user.name, "password": hash})
+                     password = new TruyouPassword({"username": user.name, "password": hash})
                      return password.save()
                 })
                 .then((password) => {
@@ -30,6 +31,9 @@ routes.post('/register', (req, res) => {
                 })
             })      
         })
+        }else{
+            res.status(400).json({'error': 'bad request, user and password are required'})
+        }
     }else{
         res.status(400).json({error: 'registration is not allowed at this time'})
     }
@@ -38,18 +42,21 @@ routes.post('/register', (req, res) => {
 routes.post('/login', (req, res) => {
     const username = req.body.username
     const password = req.body.password
-
-    TruyouPassword.findOne({name : username})
-    .then((user) => {
-        bcrypt.compare(password, user.password, (err, result) => {
-            if (result){
-                let token = jwt.sign({data: 'foobar'}, env.env.key, { expiresIn: '24h' })
-                res.status(200).json({'token': token})
-            }else{
-                res.status(402).json({"error": 'unauthorized'})
-            }
+    if(username && password){
+        TruyouPassword.findOne({name : username})
+        .then((user) => {
+            bcrypt.compare(password, user.password, (err, result) => {
+                if (result){
+                    let token = jwt.sign({data: 'foobar'}, env.env.key, { expiresIn: '24h' })
+                    res.status(200).json({'token': token})
+                }else{
+                    res.status(402).json({"error": 'unauthorized'})
+                }
+            })
         })
-    })
+    }else{
+        res.status(400).json({'error': 'username and password are required'})
+    }
 })
 
 

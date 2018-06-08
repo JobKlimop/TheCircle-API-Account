@@ -6,7 +6,7 @@ const truyoupasswordShema = new Schema({
         type: String, 
         required: [true, 'password is required']
     },
-    name: {
+    username: {
         type: String,
         required: [true, 'username is required']
     }
