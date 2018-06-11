@@ -4,7 +4,7 @@
   "description": "Node API for the account of The Circle",
   "main": "server.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --exit"
   },
   "author": "",
   "license": "ISC",
