@@ -6,6 +6,8 @@ const TruyouPassword = require('../model/truyoupassword')
 const mongoose = require('mongoose')
 const env = require('../config/env')
 const jwt = require('jsonwebtoken')
+const x509 = require('../services/x509')
+
 
 let registrationAllow = true
 mongoose.connect(env.env.mongoHost)
@@ -16,6 +18,11 @@ routes.post('/register', (req, res) => {
         if(body.user && body.password){
         user = new Truyou(req.body.user)
         password = req.body.password
+        
+        let crt = x509.gencert(username, 'Breda', 'Noord-Brabant')
+           
+        
+
         bcrypt.genSalt(10, (err, salt) =>{
             bcrypt.hash(password, salt, (err, hash) => {
                 user.save()
@@ -45,14 +52,22 @@ routes.post('/login', (req, res) => {
     if(username && password){
         TruyouPassword.findOne({name : username})
         .then((user) => {
-            bcrypt.compare(password, user.password, (err, result) => {
-                if (result){
-                    let token = jwt.sign({data: 'foobar'}, env.env.key, { expiresIn: '24h' })
-                    res.status(200).json({'token': token})
-                }else{
-                    res.status(402).json({"error": 'unauthorized'})
-                }
-            })
+            if(user){
+                bcrypt.compare(password, user.password, (err, result) => {
+               
+                    if(err){
+                        res.send('jsdfh')
+                    }
+                    if (result){
+                        let token = jwt.sign({data: 'foobar'}, env.env.key, { expiresIn: '24h' })
+                        res.status(200).json({'token': token})
+                    }else{
+                        res.status(402).json({"error": 'unauthorized'})
+                    }
+                })
+            }else{
+                res.status(401).json({'error': 'user does not exist'})
+            }
         })
     }else{
         res.status(400).json({'error': 'username and password are required'})
@@ -73,5 +88,10 @@ routes.post('/check', (req, res) => {
     }else{
         res.status(402).json({'error': 'unauthorized, please supply a token'})
     }
+})
+
+
+routes.post('/test', (req, res) => {
+    
 })
 module.exports = routes
