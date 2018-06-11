@@ -1,40 +1,25 @@
 const jsrsasign = require('jsrsasign')
 const selfsigned = require('self-signed')
-const crypto = require('crypto')
+const crypto = require('crypto-js')
 
-
-function gencert(name, city, state, country) {
+function gencert(name, city, state) {
     let pems = selfsigned.generate({
         name: name,
-        country: country,
         city: city,
         state: state,
         organization: 'Test',
         unit: 'Test'
       }, {
-        keySize: 2048, // default
+        keySize: 1024, // default
         expire: 2 * 365 * 24 * 60 * 60 * 1000 // defaults to exactly 1 year
       });
 
       return pems
 }
 
-function encryptPEM(PEM, username, password){
-   let key = crypto.createHash('sha256').update(username+password, 'utf-8').digest('hex')
-   let cipher = crypto.createCipher('AES256', key)
-   let ciphered = cipher.update(JSON.stringify(PEM), 'utf-8', 'hex')
-   ciphered += cipher.final('hex')
-   return ciphered
-}
+// function encryptPEM(pem, username, password){
+//     let key = crypto.SHA256(username+password)
+//     let cipher = crypto.AES.encrypt(PEM, )
+// }
 
-function decrypt(ciphertext, username, password){
-    let key = crypto.createHash('sha256').update(username+password, 'utf-8').digest('hex')
-    let decipher = crypto.createDecipher('AES256', key)
-    let deciphered = decipher.update(ciphertext, 'hex', 'utf-8')
-    deciphered += decipher.final('utf-8')
-
-    return JSON.parse(deciphered)
- 
-}
-
-module.exports = { gencert, encryptPEM, decrypt}
+module.exports = { gencert }
