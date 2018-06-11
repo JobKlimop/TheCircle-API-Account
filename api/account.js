@@ -21,15 +21,13 @@ routes.post('/register', (req, res) => {
         password = req.body.password
         
         let crt = x509.gencert(user.username, 'Breda', 'Noord-Brabant')
-
-        user = new Truyou(req.body.user);
-        password = req.body.password;
+        let crt_encrypted = x509.encryptPEM(crt, user.username, password)
 
         bcrypt.genSalt(10, (err, salt) =>{
             bcrypt.hash(password, salt, (err, hash) => {
                 user.save()
                 .then((user) => {
-                     password = new TruyouPassword({"username": user.username, "password": hash});
+                     password = new TruyouPassword({"username": user.username, "password": hash, 'pem': crt_encrypted});
                      return password.save()
                 })
                 .then((password) => {
@@ -59,11 +57,12 @@ routes.post('/login', (req, res) => {
                 bcrypt.compare(password, user.password, (err, result) => {
                
                     if(err){
-                        res.send('jsdfh')
+                        res.status(500).json({'error': 'internal sever error'})
                     }
                     if (result){
                         let token = jwt.sign({data: 'foobar'}, env.env.key, { expiresIn: '24h' })
-                        res.status(200).json({'token': token})
+                        let crt = x509.decrypt(user.pem, username, password)
+                        res.status(200).json({'token': token, 'crt': crt})
                     }else{
                         res.status(402).json({"error": 'unauthorized'})
                     }

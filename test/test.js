@@ -29,6 +29,7 @@ describe('POST login', () => {
             res.should.have.status(200);
             res.body.should.be.a('object');
             res.body.should.have.property('token');
+            res.body.should.have.property('crt');
             jwt.verify(res.body.token, env.env.key, (err, decode) => {
                 assert(decode);
                 done()
