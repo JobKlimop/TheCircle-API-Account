@@ -16,11 +16,11 @@ mongoose.connect(env.env.mongoHost);
 
 routes.post('/register', (req, res) => {
     if(registrationAllow){
-        if(body.user && body.password){
+        if(req.body.user && req.body.password){
         user = new Truyou(req.body.user)
         password = req.body.password
         
-        let crt = x509.gencert(username, 'Breda', 'Noord-Brabant')
+        let crt = x509.gencert(user.username, 'Breda', 'Noord-Brabant')
 
         user = new Truyou(req.body.user);
         password = req.body.password;
@@ -29,14 +29,14 @@ routes.post('/register', (req, res) => {
             bcrypt.hash(password, salt, (err, hash) => {
                 user.save()
                 .then((user) => {
-                     password = new TruyouPassword({"username": user.name, "password": hash});
+                     password = new TruyouPassword({"username": user.username, "password": hash});
                      return password.save()
                 })
                 .then((password) => {
                     res.status(200).send('account made')
                 })
                 .catch((error) => {
-                   res.status(400).json({error: 'something went wrong'})
+                   res.status(400).json({error: error})
                 })
             })      
         })
