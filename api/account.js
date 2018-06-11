@@ -9,8 +9,9 @@ const jwt = require('jsonwebtoken')
 const x509 = require('../services/x509')
 
 
-let registrationAllow = true
-mongoose.connect(env.env.mongoHost)
+
+let registrationAllow = true;
+mongoose.connect(env.env.mongoHost);
 
 
 routes.post('/register', (req, res) => {
@@ -20,14 +21,15 @@ routes.post('/register', (req, res) => {
         password = req.body.password
         
         let crt = x509.gencert(username, 'Breda', 'Noord-Brabant')
-           
-        
+
+        user = new Truyou(req.body.user);
+        password = req.body.password;
 
         bcrypt.genSalt(10, (err, salt) =>{
             bcrypt.hash(password, salt, (err, hash) => {
                 user.save()
                 .then((user) => {
-                     password = new TruyouPassword({"username": user.name, "password": hash})
+                     password = new TruyouPassword({"username": user.name, "password": hash});
                      return password.save()
                 })
                 .then((password) => {
@@ -44,11 +46,11 @@ routes.post('/register', (req, res) => {
     }else{
         res.status(400).json({error: 'registration is not allowed at this time'})
     }
-})
+});
 
 routes.post('/login', (req, res) => {
-    const username = req.body.username
-    const password = req.body.password
+    const username = req.body.username;
+    const password = req.body.password;
     if(username && password){
         TruyouPassword.findOne({name : username})
         .then((user) => {
@@ -68,15 +70,16 @@ routes.post('/login', (req, res) => {
             }else{
                 res.status(401).json({'error': 'user does not exist'})
             }
+
         })
     }else{
         res.status(400).json({'error': 'username and password are required'})
     }
-})
+});
 
 
 routes.post('/check', (req, res) => {
-    let token = req.body.token
+    let token = req.body.token;
     if (token){
         jwt.verify(token, env.env.key, (err, decode) => {
             if(err){
@@ -95,3 +98,5 @@ routes.post('/test', (req, res) => {
     
 })
 module.exports = routes
+
+

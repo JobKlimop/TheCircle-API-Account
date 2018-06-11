@@ -10,8 +10,8 @@ const truyoupasswordShema = new Schema({
         type: String,
         required: [true, 'username is required']
     }
-})
+});
 
-const truyou = mongoose.model('truyoupassword', truyoupasswordShema)
+const truyou = mongoose.model('truyoupassword', truyoupasswordShema);
 
-module.exports = truyou
+module.exports = truyou;
