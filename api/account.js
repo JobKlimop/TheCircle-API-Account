@@ -52,8 +52,9 @@ routes.post('/login', (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     if(username && password){
-        TruyouPassword.findOne({name : username})
+        TruyouPassword.findOne({username : username})
         .then((user) => {
+            console.log(user)
             if(user){
                 bcrypt.compare(password, user.password, (err, result) => {
                
