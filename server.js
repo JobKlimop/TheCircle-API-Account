@@ -26,7 +26,9 @@ app.use(function (req, res, next) {
 app.set('port', env.env.port);
 app.set('env', 'development');
 
-
+app.get('/', (req, res,) => {
+    res.sendfile('./assets/thecircle.html')
+})
 
 // login and register endpoints
 app.use('/api/account', account);
