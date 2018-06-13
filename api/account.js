@@ -52,7 +52,6 @@ routes.post('/login', (req, res) => {
     if(username && password){
         TruyouPassword.findOne({username : username})
         .then((user) => {
-            console.log(user)
             if(user){
                 bcrypt.compare(password, user.password, (err, result) => {
                
