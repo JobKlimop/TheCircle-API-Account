@@ -61,7 +61,10 @@ routes.post('/login', (req, res) => {
                     if (result){
                         let token = jwt.sign({data: 'foobar'}, env.env.key, { expiresIn: '24h' })
                         let crt = x509.decryptPEM(user.pem, username, password)
-                        res.status(200).json({'token': token, 'crt': crt})
+                        Truyou.findOne({'username': username})
+                        .then((userObj) => {
+                            res.status(200).json({'token': token, 'crt': crt, 'user': userObj})
+                        })
                     }else{
                         res.status(402).json({"error": 'unauthorized'})
                     }
