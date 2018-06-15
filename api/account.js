@@ -14,6 +14,10 @@ let registrationAllow = true;
 mongoose.connect(env.env.mongoHost);
 
 
+routes.get('/test', (req, res) => {
+    res.send(x509.gencert('username', 'Breda', 'Noord-Brabant', 'NL' ))
+})
+
 routes.post('/register', (req, res) => {
     if(registrationAllow){
         if(req.body.user && req.body.password){
