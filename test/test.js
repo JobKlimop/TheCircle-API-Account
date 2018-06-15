@@ -21,6 +21,7 @@ describe('POST login', (done) => {
     let resbody;
 
     before((done) => {
+
         body = {
             "username": "mika",
             "password": "test"
@@ -36,7 +37,7 @@ describe('POST login', (done) => {
         })
     })
 
-    it('Login and get a valid token', () => {
+    it('Login and get a valid response', (done) => {
 
         
         body = {
@@ -45,26 +46,32 @@ describe('POST login', (done) => {
         };
 
         chai.request(server)
-        .post('/api/account/login')
-        .send(body)
-        .end((err, res) => {
-            
-            res.should.have.status(200);
-            res.body.should.be.a('object');
-            res.body.should.have.property('token');
-            res.body.should.have.property('crt');
-            jwt.verify(res.body.token, env.env.key, (err, decode) => {
-                assert(decode);
-                done()
+            .post('/api/account/login')
+            .send(body)
+            .end((err, res) => {
+                if(err){
+                    assert(true == false)
+                    done()
+                }
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('token');
+                res.body.should.have.property('crt');
+                res.body.should.have.property('user')
+                assert(res.body.user != undefined)
+                jwt.verify(res.body.token, env.env.key, (err, decode) => {
+                    assert(decode);
+                    done()
+                })
+                
             })
-            
-        })
     })
 
     it('test if a signed message can be verified', (done) => {
 
         // Setting the test message
         const message = 'test message'
+
 
         // Signing the message
         let sigS = new jsrsasign.KJUR.crypto.Signature({'alg': 'SHA256withRSA'});
