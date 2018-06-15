@@ -15,7 +15,7 @@ mongoose.connect(env.env.mongoHost);
 
 
 routes.get('/test', (req, res) => {
-    res.send(x509.gencert('username', 'Breda', 'Noord-Brabant', 'NL' ))
+   
 })
 
 routes.post('/register', (req, res) => {
@@ -24,23 +24,25 @@ routes.post('/register', (req, res) => {
         user = new Truyou(req.body.user)
         password = req.body.password
         
-        let crt = x509.gencert(user.username, 'Breda', 'Noord-Brabant')
-        let crt_encrypted = x509.encryptPEM(crt, user.username, password)
+        x509.gencert(user.username, 'Breda', 'Noord-Brabant','NL')
+        .then((crt) => {
+            let crt_encrypted = x509.encryptPEM(crt, user.username, password)
 
-        bcrypt.genSalt(10, (err, salt) =>{
-            bcrypt.hash(password, salt, (err, hash) => {
-                user.save()
-                .then((user) => {
-                     password = new TruyouPassword({"username": user.username, "password": hash, 'pem': crt_encrypted});
-                     return password.save()
-                })
-                .then((password) => {
-                    res.status(200).send('account made')
-                })
-                .catch((error) => {
-                   res.status(400).json({error: error})
-                })
-            })      
+            bcrypt.genSalt(10, (err, salt) =>{
+                bcrypt.hash(password, salt, (err, hash) => {
+                    user.save()
+                    .then((user) => {
+                         password = new TruyouPassword({"username": user.username, "password": hash, 'pem': crt_encrypted});
+                         return password.save()
+                    })
+                    .then((password) => {
+                        res.status(200).send('account made')
+                    })
+                    .catch((error) => {
+                       res.status(400).json({error: error})
+                    })
+                })      
+            })
         })
         }else{
             res.status(400).json({'error': 'bad request, user and password are required'})
@@ -67,7 +69,14 @@ routes.post('/login', (req, res) => {
                         let crt = x509.decryptPEM(user.pem, username, password)
                         Truyou.findOne({'username': username})
                         .then((userObj) => {
-                            res.status(200).json({'token': token, 'crt': crt, 'user': userObj})
+                            res.status(200).json({
+                                'token': token,
+                                "crt":{
+                                    "private": crt.crt.private, 
+                                    "public": crt.crt.public, 
+                                    "cert":crt.crt.cert
+                                },
+                                'user': userObj})
                         })
                     }else{
                         res.status(402).json({"error": 'unauthorized'})
