@@ -13,9 +13,23 @@ const x509 = require('../services/x509')
 let registrationAllow = true;
 mongoose.connect(env.env.mongoHost);
 
-
-routes.get('/test', (req, res) => {
-   
+routes.get('/streamers', (req, res) => {
+  let liveStreamers = []
+  Truyou.find()
+    .then(ls => {
+      console.log(ls);
+      ls.forEach(liveStreamer => {
+        let streamer = {
+          username: liveStreamer.username,
+          email: liveStreamer.email,
+          slogan: liveStreamer.slogan
+        };
+        liveStreamers.push(streamer);
+        response = liveStreamers;
+      })
+      res.status(200).json(response);
+    })
+    .catch(error => res.status(400).json(error));
 })
 
 routes.post('/register', (req, res) => {
@@ -23,7 +37,7 @@ routes.post('/register', (req, res) => {
         if(req.body.user && req.body.password){
         user = new Truyou(req.body.user)
         password = req.body.password
-        
+
         x509.gencert(user.username, 'Breda', 'Noord-Brabant','NL')
         .then((crt) => {
             let crt_encrypted = x509.encryptPEM(crt, user.username, password)
@@ -41,7 +55,7 @@ routes.post('/register', (req, res) => {
                     .catch((error) => {
                        res.status(400).json({error: error})
                     })
-                })      
+                })
             })
         })
         }else{
@@ -60,7 +74,7 @@ routes.post('/login', (req, res) => {
         .then((user) => {
             if(user){
                 bcrypt.compare(password, user.password, (err, result) => {
-               
+
                     if(err){
                         res.status(500).json({'error': 'internal sever error'})
                     }
@@ -72,8 +86,8 @@ routes.post('/login', (req, res) => {
                             res.status(200).json({
                                 'token': token,
                                 "crt":{
-                                    "private": crt.private, 
-                                    "public": crt.public, 
+                                    "private": crt.private,
+                                    "public": crt.public,
                                     "cert":crt.cert
                                 },
                                 'user': userObj})
@@ -108,10 +122,7 @@ routes.post('/check', (req, res) => {
     }
 })
 
-
 routes.post('/test', (req, res) => {
-    
+
 })
 module.exports = routes
-
-
