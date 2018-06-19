@@ -72,9 +72,9 @@ routes.post('/login', (req, res) => {
                             res.status(200).json({
                                 'token': token,
                                 "crt":{
-                                    "private": crt.crt.private, 
-                                    "public": crt.crt.public, 
-                                    "cert":crt.crt.cert
+                                    "private": crt.private, 
+                                    "public": crt.public, 
+                                    "cert":crt.cert
                                 },
                                 'user': userObj})
                         })
