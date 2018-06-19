@@ -77,7 +77,7 @@ function gencert(name, city, state, country) {
                 cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 1);
                 let attrsIssuer = [{
                  name: 'commonName',
-                 value: 'The Circle CA'
+                 value: 'The Circle'
                }, {
                  name: 'countryName',
                  value: 'NL'
@@ -92,7 +92,10 @@ function gencert(name, city, state, country) {
                  value: 'The Circle'
                }, {
                  shortName: 'OU',
-                 value: 'Certificate Authority'
+                 value: 'The Circle'
+               },{
+                 shortName: 'E',
+                 value: 'thecircle@the.circle'
                }];
              
                let attrsSubject = [{
