@@ -64,8 +64,11 @@ function gencert(name, city, state, country) {
     
 
     const promise = new Promise((resolve, reject) => {
-        fs.readFile('assets/cert.crt', (err, certdata) => {
-                if(err){
+      fs.readFile('./assets/cert.crt', (error, certdata) => {
+
+               
+
+                if(error){
                     reject('erron in read file')
                 }
 
@@ -76,9 +79,6 @@ function gencert(name, city, state, country) {
                 cert.serialNumber = '01'
                 cert.validity.notAfter.setFullYear(cert.validity.notBefore.getFullYear() + 1);
                 let attrsIssuer = [{
-                 name: 'commonName',
-                 value: 'The Circle'
-               }, {
                  name: 'countryName',
                  value: 'NL'
                }, {
@@ -92,6 +92,9 @@ function gencert(name, city, state, country) {
                  value: 'The Circle'
                }, {
                  shortName: 'OU',
+                 value: 'The Circle'
+               }, {
+                 name: 'commonName',
                  value: 'The Circle'
                },{
                  shortName: 'E',
@@ -118,7 +121,9 @@ function gencert(name, city, state, country) {
                  value: 'Users'
                }];
              
-               cert.setIssuer(attrsIssuer)
+               let root = forge.pki.certificateFromPem(certdata.toString());
+               let issuer = root.subject.attributes;
+               cert.setIssuer(issuer)
                cert.setSubject(attrsSubject)
              
              
@@ -136,6 +141,19 @@ function gencert(name, city, state, country) {
     })
 
     return promise
+}
+
+
+function readcrt(){
+  fs.readFile('./assets/cert.crt', (error, data) => {
+
+    if (error) {
+      console.log(error + "erro")
+    }
+      let root = forge.pki.certificateFromPem(data.toString())
+      console.log(data + error + "LUL")
+      return root.subject
+  })
 }
 
 function encryptPEM(PEM, username, password){
@@ -156,4 +174,4 @@ function decryptPEM(ciphertext, username, password){
  
 }
 
-module.exports = { gencert, encryptPEM, decryptPEM}
+module.exports = { gencert, encryptPEM, decryptPEM, readcrt}
