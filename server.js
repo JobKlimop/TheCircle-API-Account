@@ -5,11 +5,15 @@ const env = require('./config/env');
 const jwt = require('jsonwebtoken');
 const account = require('./api/account');
 const mongoose = require('mongoose');
+const test = require('./services/x509')
 
 mongoose.Promise = global.Promise;
 
 const app = express();
 module.exports = {};
+
+
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.json({type: 'application/vnd.api+json'}));
@@ -32,6 +36,7 @@ app.get('/', (req, res) => {
 
 // login and register endpoints
 app.use('/api/account', account);
+
 
 
 // token check

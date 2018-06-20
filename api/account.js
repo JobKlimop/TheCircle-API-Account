@@ -14,8 +14,19 @@ let registrationAllow = true;
 mongoose.connect(env.env.mongoHost);
 
 
-routes.get('/test', (req, res) => {
-   
+routes.get('/user/:username', (req, res) => {
+    let username = req.params.username
+    Truyou.findOne({"username" : username})
+    .then((user) => {
+        if(user){
+            res.status(200).json(user)
+        }else{
+            res.status(400).json({"error" : "cannot find user"})
+        }
+    })
+    .catch((error) => {
+        res.status(400).json({"error" : "cannot find user"})
+    })
 })
 
 routes.post('/register', (req, res) => {

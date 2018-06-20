@@ -15,6 +15,7 @@ const truyouShema = new Schema({
         required: [true, 'slogan is required']
     },
     avatar:{
+        type: String,
         required: false
     },
 });
